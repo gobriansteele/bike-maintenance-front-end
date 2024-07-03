@@ -1,5 +1,10 @@
 'use server'
-export async function loginAction(formData: FormData) {
+type LoginData = {
+    access_token: string | null
+
+}
+
+export async function loginAction(_: LoginData, formData: FormData): Promise<LoginData>  {
     const username = formData.get('username')
     const password = formData.get('password')
     if (!username || !password) {
@@ -8,9 +13,9 @@ export async function loginAction(formData: FormData) {
     if(typeof username !== 'string' || typeof password !== 'string') {
         throw new Error('Email and password must be strings')
     }
-    const foo = new URLSearchParams()
-    foo.set('username', username)
-    foo.set('password', password)
+    const payload = new URLSearchParams()
+    payload.set('username', username)
+    payload.set('password', password)
 
 
     try {
@@ -19,16 +24,18 @@ export async function loginAction(formData: FormData) {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: foo
+        body: payload
 
     })
     if(!response.ok) {
         // handle error
+        throw new Error()
     }
-    const data = await response.json()
-        console.log(data)
+    return await response.json()
+
 
     } catch(e) {
         console.log(e)
     }
+    return {access_token: null}
 }

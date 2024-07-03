@@ -6,22 +6,23 @@ type Bike = {
 }
 
 async function getBikes(): Promise<Bike[]> {
-    // let data: Bike[] = [];
-    // try {
-    // const res = await fetch('http://127.0.0.1:8000/v1/bikes');
-    // data = await res.json();
-    // } catch {
-    //     // error handle here
-    // }
-    // return data;
-    return new Promise( (res)=>{
-        setTimeout(async()=>{
-        let data: Bike[];
-        const r = await fetch('http://127.0.0.1:8000/v1/bikes');
-        data = await r.json();
-            res(data)
-        }, 2000)
-    })
+    const token = sessionStorage.getItem('bike_access_token')
+    if(!token) {
+        throw new Error('Not authenticated')
+    }
+    let data: Bike[] = [];
+    try {
+    const res = await fetch('http://127.0.0.1:8000/v1/bikes', {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    data = await res.json();
+    } catch {
+        // error handle here
+    }
+    return data;
+
 }
 
 export default  function Bikes() {
