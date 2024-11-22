@@ -1,28 +1,30 @@
 'use client'
+import { useActionState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useFormState } from 'react-dom'
 import { loginAction } from '@/app/actions'
 
 type LoginData = {
-  access_token: string | null
+  success: boolean
 }
 
 export function LoginForm() {
   const router = useRouter()
-  const [state, formAction] = useFormState<LoginData, FormData>(loginAction, {
-    access_token: null,
+  const [state, formAction] = useActionState<LoginData, FormData>(loginAction, {
+    success: false,
   })
-  if (state.access_token) {
-    sessionStorage.setItem('bike_access_token', state.access_token)
-    router.push('/bikes')
-  }
+
+  useEffect(() => {
+    if (state.success) {
+      router.push('/bikes')
+    }
+  }, [router, state.success])
 
   return (
     <form action={formAction}>
       <input type="email" name="username" style={{ color: '#000000' }} />
       <input type="password" name="password" style={{ color: '#000000' }} />
       <button type="submit">Login</button>
-      {state.access_token && <div>{state.access_token}</div>}
+      {state.success && <div>{state.success}</div>}
     </form>
   )
 }

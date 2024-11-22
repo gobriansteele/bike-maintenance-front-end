@@ -1,6 +1,9 @@
 'use server'
+import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+
 type LoginData = {
-  access_token: string | null
+  success: boolean
 }
 
 export async function loginAction(
@@ -31,9 +34,16 @@ export async function loginAction(
       // handle error
       throw new Error()
     }
-    return await response.json()
+    const data: { access_token: string } = await response.json()
+    if (data.access_token) {
+      const cookieStore = await cookies()
+      cookieStore.set('access_token', data.access_token)
+      console.log(cookieStore)
+    }
+
+    return { success: true }
   } catch (e) {
     console.log(e)
   }
-  return { access_token: null }
+  return { success: false }
 }

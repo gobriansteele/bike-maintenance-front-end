@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { cookies } from 'next/headers'
 
 type Bike = {
   model: string
@@ -6,22 +7,25 @@ type Bike = {
 }
 
 async function getBikes(): Promise<Bike[]> {
-  const token = sessionStorage.getItem('bike_access_token')
-  if (!token) {
-    throw new Error('Not authenticated')
-  }
-
   let data: Bike[] = []
   try {
-    const res = await fetch('http://127.0.0.1:8000/v1/bikes', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    data = await res.json()
+    const cookieStore = await cookies()
+    const token = cookieStore.get('access_token')
+    if (token?.value) {
+      const res = await fetch('http://127.0.0.1:8000/v1/bikes', {
+        headers: {
+          Authorization: `Bearer ${token.value}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      data = await res.json()
+    } else {
+      console.log('no token')
+    }
   } catch {
     // error handle here
   }
+
   return data
 }
 
@@ -35,6 +39,7 @@ export default function Bikes() {
 
 async function BikeList() {
   const bikes = await getBikes()
+  console.log(bikes)
   return (
     <div>
       {bikes.map((bike) => {
