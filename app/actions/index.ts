@@ -1,15 +1,10 @@
 'use server'
-import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
-type LoginData = {
-  success: boolean
-}
-
 export async function loginAction(
-  _: LoginData,
+  _: boolean,
   formData: FormData
-): Promise<LoginData> {
+): Promise<boolean> {
   const username = formData.get('username')
   const password = formData.get('password')
   if (!username || !password) {
@@ -41,9 +36,9 @@ export async function loginAction(
       console.log(cookieStore)
     }
 
-    return { success: true }
+    return true
   } catch (e) {
     console.log(e)
   }
-  return { success: false }
+  return false
 }
