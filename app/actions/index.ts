@@ -33,9 +33,11 @@ export async function loginAction(
     if (data.access_token) {
       const cookieStore = await cookies()
       cookieStore.set('access_token', data.access_token)
-      console.log(cookieStore)
+    } else {
+      throw new Error(
+        'Unexpected condition: No access token in server response'
+      )
     }
-
     return true
   } catch (e) {
     console.log(e)

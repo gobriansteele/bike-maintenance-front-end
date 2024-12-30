@@ -20,7 +20,7 @@ async function getBikes(): Promise<Bike[]> {
       })
       data = await res.json()
     } else {
-      console.log('no token')
+      throw new Error('Unexpected condition: No access token in cookie') // should log out?
     }
   } catch {
     // error handle here
