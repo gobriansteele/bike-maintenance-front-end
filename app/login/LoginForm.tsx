@@ -1,20 +1,24 @@
 'use client'
-import { useActionState, useEffect } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { loginAction } from '@/app/actions'
 
 export function LoginForm() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const router = useRouter()
-  const [success, formAction] = useActionState<boolean, FormData>(
-    loginAction,
-    false
-  )
+  const [response, formAction] = useActionState<
+    { status: number; message: string } | null,
+    FormData
+  >(loginAction, null)
 
   useEffect(() => {
-    if (success) {
+    if (response?.status === 200) {
       router.push('/bikes')
     }
-  }, [router, success])
+  }, [router, response?.status])
+
+  const isLoginError = response?.status === 401
 
   return (
     <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
@@ -36,6 +40,8 @@ export function LoginForm() {
               id="username"
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="name@gmail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
@@ -45,6 +51,8 @@ export function LoginForm() {
               id="password"
               placeholder="••••••••"
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <button
@@ -53,6 +61,11 @@ export function LoginForm() {
           >
             Sign in
           </button>
+          {isLoginError && (
+            <p className="text-sm font-light text-red-700">
+              Incorrect email or password
+            </p>
+          )}
         </form>
       </div>
     </div>

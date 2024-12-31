@@ -1,5 +1,7 @@
 import { Suspense } from 'react'
 import { cookies } from 'next/headers'
+import { LogoutButton } from '@/components'
+import { logout } from '@/app/actions'
 
 type Bike = {
   model: string
@@ -39,7 +41,7 @@ export default function Bikes() {
 
 async function BikeList() {
   const bikes = await getBikes()
-  console.log(bikes)
+
   return (
     <div>
       {bikes.map((bike) => {
@@ -49,6 +51,7 @@ async function BikeList() {
           </div>
         )
       })}
+      <LogoutButton onClickAction={logout} />
     </div>
   )
 }
