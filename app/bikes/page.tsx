@@ -1,11 +1,13 @@
 import { Suspense } from 'react'
 import { cookies } from 'next/headers'
-import { LogoutButton } from '@/components'
+import { LogoutButton, BikeListItem } from '@/components'
 import { logout } from '@/app/actions'
 
 type Bike = {
   model: string
   brand: string
+  nickname: string
+  id: string
 }
 
 async function getBikes(): Promise<Bike[]> {
@@ -46,9 +48,13 @@ async function BikeList() {
     <div>
       {bikes.map((bike) => {
         return (
-          <div key={bike.model}>
-            {bike.brand} {bike.model}
-          </div>
+          <BikeListItem
+            key={bike.id}
+            model={bike.model}
+            brand={bike.brand}
+            nickname={bike.nickname}
+            id={bike.id}
+          />
         )
       })}
       <LogoutButton onClickAction={logout} />
