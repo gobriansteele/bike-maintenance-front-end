@@ -10,8 +10,13 @@ type Bike = {
   id: string
 }
 
-async function getBikes(): Promise<Bike[]> {
-  let data: Bike[] = []
+type ResultsWrapper<T> = {
+  results: T[]
+  count: number
+}
+
+async function getBikes(): Promise<ResultsWrapper<Bike>> {
+  let data: ResultsWrapper<Bike> = { results: [], count: 0 }
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get('access_token')
@@ -28,6 +33,7 @@ async function getBikes(): Promise<Bike[]> {
     }
   } catch {
     // error handle here
+    throw new Error('Unexpected condition: Could not get bikes')
   }
 
   return data
@@ -46,7 +52,7 @@ async function BikeList() {
 
   return (
     <div>
-      {bikes.map((bike) => {
+      {bikes.results.map((bike) => {
         return (
           <BikeListItem
             key={bike.id}
